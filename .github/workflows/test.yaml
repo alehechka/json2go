@@ -22,5 +22,8 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Build Executable
+        run: go build main.go
+
       - name: Run unit tests
         run: go test ./... --cover
