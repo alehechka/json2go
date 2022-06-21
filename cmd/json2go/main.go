@@ -16,6 +16,7 @@ const (
 	rootFlag       = "root"
 	packageFlag    = "package"
 	outputFileFlag = "output"
+	debugFlag      = "debug"
 	quietFlag      = "quiet"
 )
 
@@ -40,7 +41,7 @@ var generateFlags = []cli.Flag{
 		Name:    packageFlag,
 		Aliases: []string{"p"},
 		Usage:   "The name of the package to generate the types under.",
-		Value:   "main",
+		Value:   gen.DefaultPackage,
 	},
 	&cli.StringFlag{
 		Name:    outputFileFlag,
@@ -50,34 +51,38 @@ var generateFlags = []cli.Flag{
 		Value: gen.DefaultOutputFile,
 	},
 	&cli.BoolFlag{
+		Name:  debugFlag,
+		Usage: "Log debug messages.",
+	},
+	&cli.BoolFlag{
 		Name:    quietFlag,
 		Aliases: []string{"q"},
-		Usage:   "Make the logger quiet.",
-	},
-	&cli.StringFlag{
-		Usage: "Standard in.",
+		Usage:   "Quiets fatal errors.",
 	},
 }
 
 func generateTypes(ctx *cli.Context) error {
-	logger := log.New(log.Writer(), "", 0)
-	if ctx.Bool(quietFlag) {
-		logger = log.New(ioutil.Discard, "", log.LstdFlags)
+	debugger := log.New(ioutil.Discard, "", log.LstdFlags)
+
+	if ctx.Bool(debugFlag) {
+		debugger = log.New(log.Writer(), "", 0)
 	}
 
-	outputFileName := ctx.String(fileFlag)
-	if len(outputFileName) == 0 {
-		outputFileName = ctx.String(outputFileFlag)
-	}
-
-	return gen.New().Build(&gen.Config{
-		Logger:         logger,
+	err := gen.New().Build(&gen.Config{
+		Debugger:       debugger,
 		URL:            ctx.String(urlFlag),
 		File:           ctx.String(fileFlag),
 		RootName:       ctx.String(rootFlag),
 		PackageName:    ctx.String(packageFlag),
-		OutputFileName: outputFileName,
+		OutputFileName: ctx.String(outputFileFlag),
 	})
+
+	if err != nil && ctx.Bool(quietFlag) {
+		log.Println(err)
+		return nil
+	}
+
+	return err
 }
 
 func main() {

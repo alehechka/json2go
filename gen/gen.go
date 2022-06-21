@@ -42,17 +42,27 @@ func (g *Gen) Build(config *Config) error {
 	return g.generateTypes(g.jsonPayload, config.toJensharedConfig())
 }
 
-func (g *Gen) prepareJSON(config *Config) error {
+func (g *Gen) prepareJSON(config *Config) (err error) {
 	if len(config.File) > 0 {
-		g.bytes, _ = g.readFile(config.File)
+		config.Debugger.Printf("Reading file: %s\n", config.File)
+		if g.bytes, err = g.readFile(config.File); err != nil {
+			config.Debugger.Printf("Failed to read file: %s\n", config.File)
+		}
+
 	}
 
 	if len(g.bytes) == 0 && len(config.URL) > 0 {
-		g.bytes, _ = g.downloadPayload(config.URL)
+		config.Debugger.Printf("Downloading data from: %s\n", config.URL)
+		if g.bytes, err = g.downloadPayload(config.URL); err != nil {
+			config.Debugger.Printf("Failed to download data from: %s\n", config.URL)
+		}
 	}
 
 	if len(g.bytes) == 0 {
-		g.bytes, _ = g.readSTDIN()
+		config.Debugger.Println("Reading data from STDIN")
+		if g.bytes, err = g.readSTDIN(); err != nil {
+			config.Debugger.Println("Failed to read data from STDIN")
+		}
 	}
 
 	if len(g.bytes) == 0 {
