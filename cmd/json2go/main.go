@@ -47,7 +47,7 @@ var generateFlags = []cli.Flag{
 		Aliases: []string{"o", "out"},
 		Usage: `The name of the file that is generated. If a file is provided as input, will use matching name unless explicitly provided. 
 		The ".go" extension is not required and will be automatically appended.`,
-		Value: "types.go",
+		Value: gen.DefaultOutputFile,
 	},
 	&cli.BoolFlag{
 		Name:    quietFlag,

@@ -3,10 +3,9 @@ package gen
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
 	"os"
 
+	"github.com/alehechka/json2go/jenshared"
 	"github.com/alehechka/json2go/utils"
 )
 
@@ -16,6 +15,7 @@ type Gen struct {
 	downloadPayload func(url string) ([]byte, error)
 	readFile        func(filepath string) ([]byte, error)
 	decodeJSON      func(data []byte, v any) error
+	generateTypes   func(data interface{}, config *jenshared.Config) error
 	jsonPayload     interface{}
 	bytes           []byte
 }
@@ -27,17 +27,8 @@ func New() *Gen {
 		downloadPayload: utils.DownloadPayload,
 		readFile:        os.ReadFile,
 		decodeJSON:      json.Unmarshal,
+		generateTypes:   jenshared.GenerateTypes,
 	}
-}
-
-// Config presents Gen configurations.
-type Config struct {
-	Logger         *log.Logger
-	URL            string
-	File           string
-	RootName       string
-	PackageName    string
-	OutputFileName string
 }
 
 // Build builds the type structs go file.
@@ -48,9 +39,7 @@ func (g *Gen) Build(config *Config) error {
 		return err
 	}
 
-	fmt.Printf("%#v\n", g.jsonPayload)
-
-	return nil
+	return g.generateTypes(g.jsonPayload, config.toJensharedConfig())
 }
 
 func (g *Gen) prepareJSON(config *Config) error {
