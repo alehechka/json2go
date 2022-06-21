@@ -5,7 +5,6 @@
 *.so
 *.dylib
 main
-json2go
 
 # Test binary, built with `go test -c`
 *.test

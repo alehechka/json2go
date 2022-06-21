@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
+	"github.com/alehechka/json2go"
+	"github.com/alehechka/json2go/gen"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,6 +16,7 @@ const (
 	rootFlag       = "root"
 	packageFlag    = "package"
 	outputFileFlag = "output"
+	quietFlag      = "quiet"
 )
 
 var generateFlags = []cli.Flag{
@@ -46,16 +49,40 @@ var generateFlags = []cli.Flag{
 		The ".go" extension is not required and will be automatically appended.`,
 		Value: "types.go",
 	},
+	&cli.BoolFlag{
+		Name:    quietFlag,
+		Aliases: []string{"q"},
+		Usage:   "Make the logger quiet.",
+	},
+	&cli.StringFlag{
+		Usage: "Standard in.",
+	},
 }
 
 func generateTypes(ctx *cli.Context) error {
-	fmt.Println("URL:", ctx.String(urlFlag))
-	return nil
+	logger := log.New(log.Writer(), "", 0)
+	if ctx.Bool(quietFlag) {
+		logger = log.New(ioutil.Discard, "", log.LstdFlags)
+	}
+
+	outputFileName := ctx.String(fileFlag)
+	if len(outputFileName) == 0 {
+		outputFileName = ctx.String(outputFileFlag)
+	}
+
+	return gen.New().Build(&gen.Config{
+		Logger:         logger,
+		URL:            ctx.String(urlFlag),
+		File:           ctx.String(fileFlag),
+		RootName:       ctx.String(rootFlag),
+		PackageName:    ctx.String(packageFlag),
+		OutputFileName: outputFileName,
+	})
 }
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "v0.1.0"
+	app.Version = json2go.Version
 	app.Usage = "Automatically generate deeply nested Go types from a JSON payload."
 	app.Commands = []*cli.Command{
 		{
