@@ -3,11 +3,12 @@ package utils
 import (
 	"bufio"
 	"errors"
+	"io/ioutil"
 	"os"
 )
 
 // ReadSTDIN provides input reader from STDIN
-func ReadSTDIN() (*bufio.Reader, error) {
+func ReadSTDIN() ([]byte, error) {
 	info, err := os.Stdin.Stat()
 	if err != nil {
 		return nil, err
@@ -17,5 +18,7 @@ func ReadSTDIN() (*bufio.Reader, error) {
 		return nil, errors.New("failed to read input from STDIN")
 	}
 
-	return bufio.NewReader(os.Stdin), nil
+	reader := bufio.NewReader(os.Stdin)
+
+	return ioutil.ReadAll(reader)
 }

@@ -1,24 +1,32 @@
 package gen
 
 import (
-	"bufio"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/alehechka/json2go/utils"
 )
 
 // Gen presents a generate tool for json2go.
 type Gen struct {
-	readSTDIN       func() (*bufio.Reader, error)
-	downloadPayload func(url string)
+	readSTDIN       func() ([]byte, error)
+	downloadPayload func(url string) ([]byte, error)
+	readFile        func(filepath string) ([]byte, error)
+	decodeJSON      func(data []byte, v any) error
+	jsonPayload     interface{}
+	bytes           []byte
 }
 
 // New creates a new Gen.
 func New() *Gen {
 	return &Gen{
-		readSTDIN: utils.ReadSTDIN,
+		readSTDIN:       utils.ReadSTDIN,
+		downloadPayload: utils.DownloadPayload,
+		readFile:        os.ReadFile,
+		decodeJSON:      json.Unmarshal,
 	}
 }
 
@@ -35,15 +43,36 @@ type Config struct {
 // Build builds the type structs go file.
 func (g *Gen) Build(config *Config) error {
 
-	reader, err := g.readSTDIN()
+	err := g.prepareJSON(config)
 	if err != nil {
-		config.Logger.Fatal(err.Error())
+		return err
 	}
-	str, err := ioutil.ReadAll(reader)
-	if err != nil {
-		config.Logger.Fatal(err.Error())
+
+	fmt.Printf("%#v\n", g.jsonPayload)
+
+	return nil
+}
+
+func (g *Gen) prepareJSON(config *Config) error {
+	if len(config.File) > 0 {
+		g.bytes, _ = g.readFile(config.File)
 	}
-	fmt.Println(string(str))
+
+	if len(g.bytes) == 0 && len(config.URL) > 0 {
+		g.bytes, _ = g.downloadPayload(config.URL)
+	}
+
+	if len(g.bytes) == 0 {
+		g.bytes, _ = g.readSTDIN()
+	}
+
+	if len(g.bytes) == 0 {
+		return errors.New("no JSON payload provided")
+	}
+
+	if err := g.decodeJSON(g.bytes, &g.jsonPayload); err != nil {
+		return err
+	}
 
 	return nil
 }
