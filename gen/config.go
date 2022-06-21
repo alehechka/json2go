@@ -1,6 +1,7 @@
 package gen
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
@@ -10,7 +11,7 @@ import (
 
 // Config presents Gen configurations.
 type Config struct {
-	Logger         *log.Logger
+	Debugger       *log.Logger
 	URL            string
 	File           string
 	RootName       string
@@ -21,10 +22,17 @@ type Config struct {
 func (c *Config) toJensharedConfig() *jenshared.Config {
 	c.prepareOutputFileName()
 
+	var dir string
+	if c.PackageName != DefaultPackage {
+		dir = fmt.Sprintf("%s/", c.PackageName)
+	}
+
 	return &jenshared.Config{
-		RootName:       c.RootName,
-		PackageName:    c.PackageName,
-		OutputFileName: c.OutputFileName,
+		RootName:        c.RootName,
+		PackageName:     c.PackageName,
+		OutputFileName:  c.OutputFileName,
+		OutputDirectory: dir,
+		Debugger:        c.Debugger,
 	}
 }
 
