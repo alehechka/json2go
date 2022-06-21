@@ -3,6 +3,8 @@ package gen
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/alehechka/json2go/jenshared"
@@ -33,6 +35,9 @@ func New() *Gen {
 
 // Build builds the type structs go file.
 func (g *Gen) Build(config *Config) error {
+	if config.Debugger == nil {
+		config.Debugger = log.New(ioutil.Discard, "", log.LstdFlags)
+	}
 
 	err := g.prepareJSON(config)
 	if err != nil {

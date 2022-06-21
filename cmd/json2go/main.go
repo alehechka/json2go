@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -62,7 +61,7 @@ var generateFlags = []cli.Flag{
 }
 
 func generateTypes(ctx *cli.Context) error {
-	debugger := log.New(ioutil.Discard, "", log.LstdFlags)
+	var debugger *log.Logger
 
 	if ctx.Bool(debugFlag) {
 		debugger = log.New(log.Writer(), "", 0)
