@@ -9,10 +9,7 @@ import (
 
 // GenerateTypes parses the provided JSON payload and generates matching Go types.
 func GenerateTypes(data interface{}, config *Config) error {
-	f, err := generateTypes(data, config)
-	if err != nil {
-		return err
-	}
+	f := generateTypes(data, config)
 
 	if err := utils.CreateFilePath(config.OutputDirectory); err != nil {
 		return err
@@ -21,8 +18,10 @@ func GenerateTypes(data interface{}, config *Config) error {
 	return f.Save(fmt.Sprintf("%s%s", config.OutputDirectory, config.OutputFileName))
 }
 
-func generateTypes(data interface{}, config *Config) (*jen.File, error) {
+func generateTypes(data interface{}, config *Config) *jen.File {
 	f := jen.NewFile(config.PackageName)
 
-	return f, nil
+	addStructsFromJSON(f, data, config)
+
+	return f
 }
