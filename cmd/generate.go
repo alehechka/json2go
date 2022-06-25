@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/alehechka/json2go/gen"
@@ -15,6 +16,7 @@ const (
 	outputFileFlag = "output"
 	debugFlag      = "debug"
 	quietFlag      = "quiet"
+	stdoutFlag     = "out"
 )
 
 var generateFlags = []cli.Flag{
@@ -42,7 +44,7 @@ var generateFlags = []cli.Flag{
 	},
 	&cli.StringFlag{
 		Name:    outputFileFlag,
-		Aliases: []string{"o", "out"},
+		Aliases: []string{"o"},
 		Usage: `The name of the file that is generated. If a file is provided as input, will use matching name unless explicitly provided. 
 		The ".go" extension is not required and will be automatically appended.`,
 		Value: gen.DefaultOutputFile,
@@ -56,23 +58,35 @@ var generateFlags = []cli.Flag{
 		Aliases: []string{"q"},
 		Usage:   "Quiets fatal errors.",
 	},
+	&cli.BoolFlag{
+		Name:  stdoutFlag,
+		Usage: "Print Go structs to STDOUT instead of saving to file.",
+	},
 }
 
-func generateTypes(ctx *cli.Context) error {
+func generateTypes(ctx *cli.Context) (err error) {
 	var debugger *log.Logger
 
 	if ctx.Bool(debugFlag) {
 		debugger = log.New(log.Writer(), "", 0)
 	}
 
-	err := gen.New().Build(&gen.Config{
+	config := &gen.Config{
 		Debugger:       debugger,
 		URL:            ctx.String(urlFlag),
 		File:           ctx.String(fileFlag),
 		RootName:       ctx.String(rootFlag),
 		PackageName:    ctx.String(packageFlag),
 		OutputFileName: ctx.String(outputFileFlag),
-	})
+	}
+
+	if ctx.Bool(stdoutFlag) {
+		var out string
+		out, err = gen.New().Build(config)
+		fmt.Println(out)
+	} else {
+		err = gen.New().Generate(config)
+	}
 
 	if err != nil && ctx.Bool(quietFlag) {
 		log.Println(err.Error())

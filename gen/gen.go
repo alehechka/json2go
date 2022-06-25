@@ -13,28 +13,30 @@ import (
 
 // Gen presents a generate tool for json2go.
 type Gen struct {
-	readSTDIN       func() ([]byte, error)
-	downloadPayload func(url string) ([]byte, error)
-	readFile        func(filepath string) ([]byte, error)
-	decodeJSON      func(data []byte, v any) error
-	generateTypes   func(data interface{}, config *jenshared.Config) error
-	jsonPayload     interface{}
-	bytes           []byte
+	readSTDIN         func() ([]byte, error)
+	downloadPayload   func(url string) ([]byte, error)
+	readFile          func(filepath string) ([]byte, error)
+	decodeJSON        func(data []byte, v any) error
+	generateTypesFile func(data interface{}, config *jenshared.Config) error
+	generateTypes     func(data interface{}, config *jenshared.Config) string
+	jsonPayload       interface{}
+	bytes             []byte
 }
 
 // New creates a new Gen.
 func New() *Gen {
 	return &Gen{
-		readSTDIN:       utils.ReadSTDIN,
-		downloadPayload: utils.DownloadPayload,
-		readFile:        os.ReadFile,
-		decodeJSON:      json.Unmarshal,
-		generateTypes:   jenshared.GenerateTypes,
+		readSTDIN:         utils.ReadSTDIN,
+		downloadPayload:   utils.DownloadPayload,
+		readFile:          os.ReadFile,
+		decodeJSON:        json.Unmarshal,
+		generateTypesFile: jenshared.GenerateTypesFile,
+		generateTypes:     jenshared.GenerateTypes,
 	}
 }
 
-// Build builds the type structs go file.
-func (g *Gen) Build(config *Config) error {
+// Generate builds the type structs Go file.
+func (g *Gen) Generate(config *Config) error {
 	if config.Debugger == nil {
 		config.Debugger = log.New(ioutil.Discard, "", log.LstdFlags)
 	}
@@ -44,7 +46,21 @@ func (g *Gen) Build(config *Config) error {
 		return err
 	}
 
-	return g.generateTypes(g.jsonPayload, config.toJensharedConfig())
+	return g.generateTypesFile(g.jsonPayload, config.toJensharedConfig())
+}
+
+// Build builds the type structs Go payload.
+func (g *Gen) Build(config *Config) (string, error) {
+	if config.Debugger == nil {
+		config.Debugger = log.New(ioutil.Discard, "", log.LstdFlags)
+	}
+
+	err := g.prepareJSON(config)
+	if err != nil {
+		return "", err
+	}
+
+	return g.generateTypes(g.jsonPayload, config.toJensharedConfig()), nil
 }
 
 func (g *Gen) prepareJSON(config *Config) (err error) {
