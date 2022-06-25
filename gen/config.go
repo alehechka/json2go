@@ -27,6 +27,8 @@ func (c *Config) toJensharedConfig() *jenshared.Config {
 		dir = fmt.Sprintf("%s/", c.PackageName)
 	}
 
+	c.PackageName = filepath.Base(c.PackageName)
+
 	return &jenshared.Config{
 		RootName:        c.RootName,
 		PackageName:     c.PackageName,
