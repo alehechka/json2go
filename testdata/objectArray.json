@@ -1,26 +1,24 @@
 [
-	[
-		{
-			"boolean": true,
-			"string": "hello, world",
-			"float64": 12.34,
-			"nestedObject": {
-				"firstThing": "something",
-				"secondThing": 12.34,
-				"thirdThing": false
-			},
-			"nestedObjectArray": [
-				{
-					"firstItem": "data",
-					"secondItem": 12.34,
-					"thirdItem": true
-				}
-			],
-			"nestedStringArray": ["hello", "world"],
-			"nestedBooleanArray": [true, false],
-			"nestedFloat64Array": [12.34, 43.21],
-			"deeplyNestedObjectArray": [[{ "thats": "deep" }]],
-			"deeplyNestedStringArray": [[["hello", "world"]]]
-		}
-	]
+	{
+		"boolean": true,
+		"string": "hello, world",
+		"float64": 12.34,
+		"nestedObject": {
+			"firstThing": "something",
+			"secondThing": 12.34,
+			"thirdThing": false
+		},
+		"nestedObjectArray": [
+			{
+				"firstItem": "data",
+				"secondItem": 12.34,
+				"thirdItem": true
+			}
+		],
+		"nestedStringArray": ["hello", "world"],
+		"nestedBooleanArray": [true, false],
+		"nestedFloat64Array": [12.34, 43.21],
+		"deeplyNestedObjectArray": [[{ "thats": "deep" }]],
+		"deeplyNestedStringArray": [[["hello", "world"]]]
+	}
 ]
