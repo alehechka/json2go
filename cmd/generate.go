@@ -34,7 +34,7 @@ var generateFlags = []cli.Flag{
 		Name:    rootFlag,
 		Aliases: []string{"r"},
 		Usage:   "The name of the root object or array",
-		Value:   "Root",
+		Value:   gen.DefaultRootName,
 	},
 	&cli.StringFlag{
 		Name:    packageFlag,

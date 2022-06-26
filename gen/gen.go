@@ -3,6 +3,7 @@ package gen
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -66,6 +67,12 @@ func (g *Gen) Build(config *Config) (string, error) {
 // SetBytes allows for the explicit setting of raw bytes prior to parsing for JSON
 func (g *Gen) SetBytes(bytes []byte) *Gen {
 	g.bytes = bytes
+	return g
+}
+
+// ReadBytes allows for the explicit setting of raw bytes via io.Reader
+func (g *Gen) ReadBytes(r io.Reader) *Gen {
+	g.bytes, _ = ioutil.ReadAll(r)
 	return g
 }
 
