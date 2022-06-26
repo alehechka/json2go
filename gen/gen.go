@@ -63,28 +63,27 @@ func (g *Gen) Build(config *Config) (string, error) {
 	return g.generateTypes(g.jsonPayload, config.toJensharedConfig()), nil
 }
 
+// SetBytes allows for the explicit setting of raw bytes prior to parsing for JSON
+func (g *Gen) SetBytes(bytes []byte) *Gen {
+	g.bytes = bytes
+	return g
+}
+
+// SetJSON allows for the explicit setting of provided JSON payload
+// TODO: Needs further testing before ready for external usage.
+func (g *Gen) setJSON(json interface{}) *Gen {
+	g.jsonPayload = json
+	return g
+}
+
 func (g *Gen) prepareJSON(config *Config) (err error) {
-	if len(config.File) > 0 {
-		config.Debugger.Printf("Reading file: %s\n", config.File)
-		if g.bytes, err = g.readFile(config.File); err != nil {
-			config.Debugger.Printf("Failed to read file: %s\n", config.File)
-		}
 
+	// If JSON payload has been explicitly set prior, then short-circuit here
+	if g.jsonPayload != nil {
+		return nil
 	}
 
-	if len(g.bytes) == 0 && len(config.URL) > 0 {
-		config.Debugger.Printf("Downloading data from: %s\n", config.URL)
-		if g.bytes, err = g.downloadPayload(config.URL); err != nil {
-			config.Debugger.Printf("Failed to download data from: %s\n", config.URL)
-		}
-	}
-
-	if len(g.bytes) == 0 {
-		config.Debugger.Println("Reading data from STDIN")
-		if g.bytes, err = g.readSTDIN(); err != nil {
-			config.Debugger.Println("Failed to read data from STDIN")
-		}
-	}
+	g.prepareBytes(config)
 
 	if len(g.bytes) == 0 {
 		return errors.New("no JSON payload provided")
@@ -95,4 +94,36 @@ func (g *Gen) prepareJSON(config *Config) (err error) {
 	}
 
 	return nil
+}
+
+func (g *Gen) prepareBytes(config *Config) {
+
+	// If bytes have been explicitly set prior, then short-circuit here
+	if len(g.bytes) > 0 {
+		return
+	}
+
+	var err error
+	if len(config.File) > 0 {
+		config.Debugger.Printf("Reading file: %s\n", config.File)
+		if g.bytes, err = g.readFile(config.File); err != nil {
+			config.Debugger.Printf("Failed to read file: %s\n", config.File)
+		} else {
+			return
+		}
+	}
+
+	if len(config.URL) > 0 {
+		config.Debugger.Printf("Downloading data from: %s\n", config.URL)
+		if g.bytes, err = g.downloadPayload(config.URL); err != nil {
+			config.Debugger.Printf("Failed to download data from: %s\n", config.URL)
+		} else {
+			return
+		}
+	}
+
+	config.Debugger.Println("Reading data from STDIN")
+	if g.bytes, err = g.readSTDIN(); err != nil {
+		config.Debugger.Println("Failed to read data from STDIN")
+	}
 }
