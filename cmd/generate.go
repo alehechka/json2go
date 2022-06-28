@@ -54,7 +54,7 @@ var generateFlags = []cli.Flag{
 	&cli.StringFlag{
 		Name:    timeFormatFlag,
 		Aliases: []string{"t"},
-		Usage:   "Time format to use while parsing strings for potential time.Time variables.",
+		Usage:   "Time format to use while parsing strings for potential time.Time variables. View time.Time constants for possible defaults: https://pkg.go.dev/time#pkg-constants",
 		Value:   time.RFC3339,
 	},
 	&cli.BoolFlag{
