@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/alehechka/json2go/gen"
 	"github.com/urfave/cli/v2"
@@ -17,6 +18,7 @@ const (
 	debugFlag      = "debug"
 	quietFlag      = "quiet"
 	stdoutFlag     = "out"
+	timeFormatFlag = "time"
 )
 
 var generateFlags = []cli.Flag{
@@ -49,6 +51,12 @@ var generateFlags = []cli.Flag{
 		The ".go" extension is not required and will be automatically appended.`,
 		Value: gen.DefaultOutputFile,
 	},
+	&cli.StringFlag{
+		Name:    timeFormatFlag,
+		Aliases: []string{"t"},
+		Usage:   "Time format to use while parsing strings for potential time.Time variables. View time.Time constants for possible defaults: https://pkg.go.dev/time#pkg-constants",
+		Value:   time.RFC3339,
+	},
 	&cli.BoolFlag{
 		Name:  debugFlag,
 		Usage: "Log debug messages.",
@@ -78,6 +86,7 @@ func generateTypes(ctx *cli.Context) (err error) {
 		RootName:       ctx.String(rootFlag),
 		PackageName:    ctx.String(packageFlag),
 		OutputFileName: ctx.String(outputFileFlag),
+		TimeFormat:     ctx.String(timeFormatFlag),
 	}
 
 	if ctx.Bool(stdoutFlag) {

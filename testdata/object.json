@@ -18,5 +18,8 @@
 	"nestedBooleanArray": [true, false],
 	"nestedFloat64Array": [12.34, 43.21],
 	"deeplyNestedObjectArray": [[{ "thats": "deep" }]],
-	"deeplyNestedStringArray": [[["hello", "world"]]]
+	"deeplyNestedStringArray": [[["hello", "world"]]],
+	"timeString": "2006-01-02",
+	"uuidString": "5051ec14-ce89-4fcf-985e-99628a373497",
+	"9%badName%": "this should break stuff"
 }
