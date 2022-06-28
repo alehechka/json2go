@@ -37,7 +37,16 @@ func createStructItems(items TypeItems) []jen.Code {
 }
 
 func createStructItem(item TypeItem) jen.Code {
-	s := jen.Id(item.Title()).Id(item.Type)
+	s := jen.Id(item.Title())
+
+	switch item.Type {
+	case "time":
+		s.Qual("time", "Time")
+	case "uuid":
+		s.Qual("github.com/google/uuid", "UUID")
+	default:
+		s.Id(item.Type)
+	}
 
 	if item.Name != "" {
 		s.Tag(map[string]string{"json": item.Name})

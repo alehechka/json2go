@@ -2,6 +2,7 @@ package jenshared
 
 import (
 	"log"
+	"regexp"
 	"strings"
 )
 
@@ -11,6 +12,7 @@ type Config struct {
 	PackageName     string
 	OutputFileName  string
 	OutputDirectory string
+	TimeFormat      string
 	Debugger        *log.Logger
 }
 
@@ -22,7 +24,8 @@ type TypeItem struct {
 
 // Title converts the JSON name to TitleCase
 func (t TypeItem) Title() string {
-	return strings.Title(t.Name)
+	specialCharacters := regexp.MustCompile(`[^a-zA-Z0-9]`)
+	return strings.Title(specialCharacters.ReplaceAllString(t.Name, "_"))
 }
 
 // TypeItems is an array of TypeItem objects
