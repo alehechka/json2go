@@ -21,5 +21,5 @@
 	"deeplyNestedStringArray": [[["hello", "world"]]],
 	"timeString": "2006-01-02",
 	"uuidString": "5051ec14-ce89-4fcf-985e-99628a373497",
-	"%badName%": "this should break stuff"
+	"9%badName%": "this should break stuff"
 }
