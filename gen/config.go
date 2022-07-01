@@ -5,7 +5,6 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/alehechka/json2go/jenshared"
 	"github.com/alehechka/json2go/utils"
@@ -66,5 +65,5 @@ func (c *Config) prepareOutputFileName() {
 }
 
 func (c *Config) getTimeFormat() string {
-	return utils.GetTimeFormat(c.TimeFormat, time.RFC3339)
+	return utils.GetTimeFormat(c.TimeFormat, utils.TimeFormatMap[DefaultTimeFormat])
 }
