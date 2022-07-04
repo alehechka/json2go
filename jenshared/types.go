@@ -15,6 +15,7 @@ type Config struct {
 	OutputDirectory string
 	TimeFormat      string
 	OmitEmpty       bool
+	Alphabetical    bool
 	Debugger        *log.Logger
 }
 
