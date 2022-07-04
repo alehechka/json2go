@@ -23,7 +23,7 @@ func createTypeItemsMapFromJSON(data interface{}, config *Config) TypeItemsMap {
 func parseInterface(items TypeItemsMap, data interface{}, config *Config) TypeItemsMap {
 	switch concreteVal := data.(type) {
 	case bool, float64, string:
-		items[config.RootName] = TypeItems{{Name: config.RootName, Type: inferDataType(concreteVal, config)}}
+		items[config.RootName] = TypeItems{{Name: config.RootName, Type: inferDataType(concreteVal, config), OmitEmpty: config.OmitEmpty}}
 	case map[string]interface{}:
 		parseMap(items, concreteVal, config.RootName, config)
 	case []interface{}:
@@ -37,10 +37,10 @@ func diveTopLevelArray(items TypeItemsMap, data []interface{}, config *Config, a
 	if len(data) > 0 {
 		switch firstVal := data[0].(type) {
 		case bool, float64, string:
-			items[config.RootName] = TypeItems{{Name: config.RootName, Type: fmt.Sprintf("%s%s", acc, inferDataType(firstVal, config))}}
+			items[config.RootName] = TypeItems{{Name: config.RootName, Type: fmt.Sprintf("%s%s", acc, inferDataType(firstVal, config)), OmitEmpty: config.OmitEmpty}}
 		case map[string]interface{}:
 			arrTitle := fmt.Sprintf("%sArray", config.RootName)
-			items[arrTitle] = TypeItems{{Name: arrTitle, Type: fmt.Sprintf("%s%s", acc, config.RootName)}}
+			items[arrTitle] = TypeItems{{Name: arrTitle, Type: fmt.Sprintf("%s%s", acc, config.RootName), OmitEmpty: config.OmitEmpty}}
 			parseMap(items, firstVal, config.RootName, config)
 
 		case []interface{}:
@@ -60,10 +60,10 @@ func parseMap(items TypeItemsMap, data map[string]interface{}, parent string, co
 			items[parent] = append(items[parent], TypeItem{Name: key, Type: title})
 			parseMap(items, concreteVal, title, config)
 		case []interface{}:
-			items[parent] = append(items[parent], TypeItem{Name: key, Type: fmt.Sprintf("[]%s", title)})
+			items[parent] = append(items[parent], TypeItem{Name: key, Type: fmt.Sprintf("[]%s", title), OmitEmpty: config.OmitEmpty})
 			parseFirstIndexArray(items, concreteVal, title, config)
 		default:
-			items[parent] = append(items[parent], TypeItem{Name: key, Type: inferDataType(concreteVal, config)})
+			items[parent] = append(items[parent], TypeItem{Name: key, Type: inferDataType(concreteVal, config), OmitEmpty: config.OmitEmpty})
 		}
 	}
 	return items

@@ -14,13 +14,15 @@ type Config struct {
 	OutputFileName  string
 	OutputDirectory string
 	TimeFormat      string
+	OmitEmpty       bool
 	Debugger        *log.Logger
 }
 
 // TypeItem represents a parsed JSON variable
 type TypeItem struct {
-	Name string
-	Type string
+	Name      string
+	Type      string
+	OmitEmpty bool
 }
 
 // Title converts the JSON name to TitleCase
@@ -33,6 +35,21 @@ func (t TypeItem) Title() string {
 	}
 
 	return strings.Title(str)
+}
+
+// TagJSON prepares the tag for provided item
+func (t TypeItem) TagJSON() string {
+	tags := []string{t.Name}
+	if t.OmitEmpty {
+		tags = append(tags, "omitempty")
+	}
+
+	return strings.Join(tags, ",")
+}
+
+// Tags creates tha Tags map
+func (t TypeItem) Tags() map[string]string {
+	return map[string]string{"json": t.TagJSON()}
 }
 
 // TypeItems is an array of TypeItem objects
