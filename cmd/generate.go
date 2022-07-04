@@ -19,6 +19,7 @@ const (
 	quietFlag      = "quiet"
 	stdoutFlag     = "out"
 	timeFormatFlag = "time"
+	omitEmptyFlag  = "omitempty"
 )
 
 var generateFlags = []cli.Flag{
@@ -58,6 +59,10 @@ var generateFlags = []cli.Flag{
 		Value:   time.RFC3339,
 	},
 	&cli.BoolFlag{
+		Name:  omitEmptyFlag,
+		Usage: "Appends the omitempty to all object variable tags.",
+	},
+	&cli.BoolFlag{
 		Name:  debugFlag,
 		Usage: "Log debug messages.",
 	},
@@ -87,6 +92,7 @@ func generateTypes(ctx *cli.Context) (err error) {
 		PackageName:    ctx.String(packageFlag),
 		OutputFileName: ctx.String(outputFileFlag),
 		TimeFormat:     ctx.String(timeFormatFlag),
+		OmitEmpty:      ctx.Bool(omitEmptyFlag),
 	}
 
 	if ctx.Bool(stdoutFlag) {

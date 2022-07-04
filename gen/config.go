@@ -19,6 +19,7 @@ type Config struct {
 	PackageName    string
 	OutputFileName string
 	TimeFormat     string
+	OmitEmpty      bool
 }
 
 func (c *Config) toJensharedConfig() *jenshared.Config {
@@ -37,6 +38,7 @@ func (c *Config) toJensharedConfig() *jenshared.Config {
 		OutputFileName:  c.OutputFileName,
 		OutputDirectory: dir,
 		TimeFormat:      c.getTimeFormat(),
+		OmitEmpty:       c.OmitEmpty,
 		Debugger:        c.Debugger,
 	}
 }
