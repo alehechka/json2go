@@ -10,16 +10,17 @@ import (
 )
 
 const (
-	urlFlag        = "url"
-	fileFlag       = "file"
-	rootFlag       = "root"
-	packageFlag    = "package"
-	outputFileFlag = "output"
-	debugFlag      = "debug"
-	quietFlag      = "quiet"
-	stdoutFlag     = "out"
-	timeFormatFlag = "time"
-	omitEmptyFlag  = "omitempty"
+	urlFlag          = "url"
+	fileFlag         = "file"
+	rootFlag         = "root"
+	packageFlag      = "package"
+	outputFileFlag   = "output"
+	debugFlag        = "debug"
+	quietFlag        = "quiet"
+	stdoutFlag       = "out"
+	timeFormatFlag   = "time"
+	omitEmptyFlag    = "omitempty"
+	alphabeticalFlag = "alphabetical"
 )
 
 var generateFlags = []cli.Flag{
@@ -63,6 +64,11 @@ var generateFlags = []cli.Flag{
 		Usage: "Appends the omitempty to all object variable tags.",
 	},
 	&cli.BoolFlag{
+		Name:    alphabeticalFlag,
+		Aliases: []string{"a", "alpha"},
+		Usage:   "Sorts all keys into alphabetical order before generation.",
+	},
+	&cli.BoolFlag{
 		Name:  debugFlag,
 		Usage: "Log debug messages.",
 	},
@@ -93,6 +99,7 @@ func generateTypes(ctx *cli.Context) (err error) {
 		OutputFileName: ctx.String(outputFileFlag),
 		TimeFormat:     ctx.String(timeFormatFlag),
 		OmitEmpty:      ctx.Bool(omitEmptyFlag),
+		Alphabetical:   ctx.Bool(alphabeticalFlag),
 	}
 
 	if ctx.Bool(stdoutFlag) {
