@@ -1,4 +1,4 @@
 package json2go
 
-// Version of swag.
-const Version = "v0.2.0"
+// Version of json2go.
+const Version = "v0.3.0"
