@@ -48,8 +48,7 @@ func createStructItem(item TypeItem) jen.Code {
 		s.Id(item.Type)
 	}
 
-	if item.Name != "" {
-		s.Tag(map[string]string{"json": item.Name})
-	}
+	s.Tag(item.Tags())
+
 	return s
 }
